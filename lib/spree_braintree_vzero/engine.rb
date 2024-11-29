@@ -10,14 +10,16 @@ module SpreeBraintreeVzero
     end
 
     def self.activate
-      Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
-        Rails.configuration.cache_classes ? require(c) : load(c)
+      Rails.application.config.to_prepare do
+        Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
+          Rails.configuration.cache_classes ? require(c) : load(c)
+        end
       end
     end
 
     config.to_prepare &method(:activate).to_proc
 
-    initializer 'spree.braintree_vzero.payment_methods', after: 'spree.register.payment_methods' do |app|
+    config.after_initialize do |app|
       app.config.spree.payment_methods += [
         Spree::Gateway::BraintreeVzeroDropInUi,
         Spree::Gateway::BraintreeVzeroPaypalExpress,
