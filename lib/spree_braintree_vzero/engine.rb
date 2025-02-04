@@ -12,7 +12,7 @@ module SpreeBraintreeVzero
     def self.activate
       Rails.application.config.to_prepare do
         Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
-          Rails.configuration.cache_classes ? require(c) : load(c)
+          load(c) if File.file?(c)
         end
       end
     end
